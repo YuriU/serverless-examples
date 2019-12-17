@@ -1,12 +1,13 @@
 'use strict';
 
 const queryString = require('querystring');
-const prefix = "mysite.com";
+
 
 module.exports.handler = (event, context, callback) => {
     console.log(JSON.stringify(event));
     const submitted = queryString.parse(event.body).link;
     console.log('Url submitted: ' + submitted);
+    const prefix = event.headers.Referer || "mysite.com";
 
     callback(null, {
         statusCode: 200,
