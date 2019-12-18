@@ -19,3 +19,9 @@ functions:
       - http:
           path: /
           method: post
+  redirect:
+    handler: redirect/index.handler
+    events:
+      - http:
+          path: /{slug}
+          method: get
