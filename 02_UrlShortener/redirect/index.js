@@ -3,7 +3,8 @@
 module.exports.handler = (event,context, callback) => {
     console.log(JSON.stringify(event));
 
-    const target = 'https://serverless.com/framework/docs/';
+    const slug = event.pathParameters.slug;
+    const target = process.env['URL_' + slug.toUpperCase()] || 'https://serverless.com/framework/docs/';
 
     callback(null, {
             statusCode: 302,
