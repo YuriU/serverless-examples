@@ -7,6 +7,11 @@ provider:
   runtime: nodejs8.10
   environment:
     SLS_STAGE: ${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Action:
+        - "dynamodb:GetItem"
+      Resource: "arn:aws:dynamodb:us-east-1:039810988692:table/dev-shortened-urls"
+      Effect: Allow
 
 functions:
   main:

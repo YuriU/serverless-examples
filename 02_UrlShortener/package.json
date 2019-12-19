@@ -1,0 +1,11 @@
+{
+  "name": "urlshortener",
+  "version": "1.0.0",
+  "description": "Url shortener",
+  "repository": "",
+  "author": "Yurii Ulianets <yuriulianets@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.73.0"
+  }
+}
