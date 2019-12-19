@@ -30,3 +30,19 @@ functions:
     environment:
       URL_INSTALL: https://serverless.com/framework/docs/providers/aws/guide/installation/
       URL_MAIN: https://serverless.com
+
+resources:
+  Resources:
+    LinkDB:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: slug
+            AttributeType: S
+        KeySchema:
+          - AttributeName: slug
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 2
+          WriteCapacityUnits: 2
+        TableName: "${opt:stage, self:provider.stage}-shortened-urls"
