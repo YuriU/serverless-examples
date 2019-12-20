@@ -6,7 +6,7 @@ const path = require('path')
 const crypto = require('crypto')
 
 const docClient = new AWS.DynamoDB.DocumentClient()
-const tableName = `${process.env.SLS_STAGE}-shortened-urls`
+const tableName = process.env.DDB_TABLE;
 
 function RenderPage (link, submitted) {
     return `

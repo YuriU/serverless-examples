@@ -16,11 +16,21 @@ provider:
   runtime: nodejs8.10
   environment:
     SLS_STAGE: ${self:custom.stage}
+    DDB_TABLE: {Ref: LinkDB}
   iamRoleStatements:
     - Action:
-        - "dynamodb:GetItem"
-        - "dynamodb:PutItem"
-      Resource: "arn:aws:dynamodb:us-east-1:039810988692:table/${self:custom.stage}-shortened-urls"
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource:
+        "Fn::Join":
+          - ""
+          -
+            - "arn:aws:dynamodb:"
+            - Ref: "AWS::Region"
+            - ":"
+            - Ref: "AWS::AccountId"
+            - ":table/"
+            - Ref: LinkDB
       Effect: Allow
 
 functions:
@@ -58,4 +68,3 @@ resources:
           - AttributeName: slug
             KeyType: HASH
         ProvisionedThroughput: ${self:custom.${self:custom.stage}DynamoCapacity}
-        TableName: "${self:custom.stage}-shortened-urls"
