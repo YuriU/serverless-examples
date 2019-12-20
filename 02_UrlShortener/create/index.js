@@ -24,6 +24,7 @@ function RenderPage (link, submitted) {
 
 module.exports.handler = (event, context, callback) => {
     console.log(JSON.stringify(event));
+    //
     const submitted = queryString.parse(event.body).link;
     console.log('Url submitted: ' + submitted);
     const prefix = event.headers.Referer || "mysite.com";
