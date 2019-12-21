@@ -4,13 +4,7 @@ frameworkVersion: ">=1.7.0 <2.0.0"
 
 custom:
   stage: ${opt:stage, self:provider.stage}
-  devDynamoCapacity:
-    ReadCapacityUnits: 1
-    WriteCapacityUnits: 1
-  prodDynamoCapacity:
-    ReadCapacityUnits: 5
-    WriteCapacityUnits: 5
-
+  extra: ${file(vars/${self:custom.stage}.yml)}
 provider:
   name: aws
   runtime: nodejs8.10
@@ -67,4 +61,4 @@ resources:
         KeySchema:
           - AttributeName: slug
             KeyType: HASH
-        ProvisionedThroughput: ${self:custom.${self:custom.stage}DynamoCapacity}
+        ProvisionedThroughput: ${self:custom.extra.DynamoCapacity}
