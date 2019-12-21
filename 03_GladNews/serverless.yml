@@ -7,7 +7,22 @@ provider:
   region: us-east-1
   runtime: nodejs8.10
 
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  
 functions:
+  presign:
+    handler: backend/pre_signup.handler
+  test:
+    handler: backend/test_auth.handler
+    events:
+      - http:
+          cors: true
+          authorizer:
+            name: pool_auth
+            arn: '${self:custom.${self:custom.stage}CognitoPool}'
+          path: /test
+          method: get
 
 resources:
   Outputs:
