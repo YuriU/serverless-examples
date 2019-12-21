@@ -28,6 +28,7 @@ functions:
     handler: backend/gql_endpoint.handler
     events:
       - http:
+          cors: true
           authorizer:
             name: pool_auth
             arn: '${self:custom.${self:custom.stage}CognitoPool}'
@@ -59,4 +60,4 @@ package:
     - node_modules/uuid/**
     - node_modules/lodash/**
     - node_modules/graphql/**
-    - node_modules/iteral/**
+    - node_modules/iterall/**
