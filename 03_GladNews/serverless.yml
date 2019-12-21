@@ -10,6 +10,7 @@ provider:
 custom:
   stage: ${opt:stage, self:provider.stage}
   
+  
 functions:
   presign:
     handler: backend/pre_signup.handler
@@ -23,6 +24,15 @@ functions:
             arn: '${self:custom.${self:custom.stage}CognitoPool}'
           path: /test
           method: get
+  gql:
+    handler: backend/gql_endpoint.handler
+    events:
+      - http:
+          authorizer:
+            name: pool_auth
+            arn: '${self:custom.${self:custom.stage}CognitoPool}'
+          path: /gql
+          method: post
 
 resources:
   Outputs:
