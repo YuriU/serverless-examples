@@ -58,7 +58,7 @@ module.exports.handler = (event, context, callback) => {
             null,
             {
               statusCode: 200,
-              body: RenderPage(path.join(prefix, slug).replace(':/', '://'), prefix),
+              body: RenderPage(path.join(prefix, slug).replace(':/', '://'), submitted),
               headers: {'Content-Type': 'text/html'}
             }
           );
