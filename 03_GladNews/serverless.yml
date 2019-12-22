@@ -6,10 +6,39 @@ provider:
   name: aws
   region: us-east-1
   runtime: nodejs8.10
+  iamRoleStatements:
+    - Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:Scan
+        - dynamodb:Query
+      Resource:
+        - "Fn::Join":
+            - ""
+            -
+              - "arn:aws:dynamodb:"
+              - Ref: "AWS::Region"
+              - ":"
+              - Ref: "AWS::AccountId"
+              - ":table/"
+              - Ref: ArticlesDB
+        - "Fn::Join":
+            - ""
+            -
+              - "arn:aws:dynamodb:"
+              - Ref: "AWS::Region"
+              - ":"
+              - Ref: "AWS::AccountId"
+              - ":table/"
+              - Ref: ArticlesDB
+              - '/index/*'
+      Effect: Allow
 
 custom:
   stage: ${opt:stage, self:provider.stage}
-  
+  devCognitoPool: 'arn:aws:cognito-idp:us-east-1:039810988692:userpool/us-east-1_6sYiKtiu3'
   
 functions:
   presign:
@@ -42,6 +71,7 @@ resources:
     WebSiteBucket:
       Value: {Ref: WebSite}
   Resources:
+    ArticlesDB: ${file('resources/article-db')}
     WebSite:
       Type: "AWS::S3::Bucket"
       Properties:
