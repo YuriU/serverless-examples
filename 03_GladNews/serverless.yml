@@ -6,6 +6,9 @@ provider:
   name: aws
   region: us-east-1
   runtime: nodejs8.10
+  environment:
+    ARTICLES_TABLE: {Ref: ArticlesDB}
+    COMMENTS_TABLE: {Ref: CommentsDB}
   iamRoleStatements:
     - Action:
         - dynamodb:GetItem
@@ -19,18 +22,37 @@ provider:
             - ""
             -
               - "arn:aws:dynamodb:"
-              - Ref: "AWS::Region"
+              - {Ref: "AWS::Region"}
               - ":"
-              - Ref: "AWS::AccountId"
+              - {Ref: "AWS::AccountId"}
+              - ":table/"
+              - Ref: CommentsDB
+        - "Fn::Join":
+            - ""
+            -
+              - "arn:aws:dynamodb:"
+              - {Ref: "AWS::Region"}
+              - ":"
+              - {Ref: "AWS::AccountId"}
+              - ":table/"
+              - Ref: CommentsDB
+              - '/index/*'
+        - "Fn::Join":
+            - ""
+            -
+              - "arn:aws:dynamodb:"
+              - {Ref: "AWS::Region"}
+              - ":"
+              - {Ref: "AWS::AccountId"}
               - ":table/"
               - Ref: ArticlesDB
         - "Fn::Join":
             - ""
             -
               - "arn:aws:dynamodb:"
-              - Ref: "AWS::Region"
+              - {Ref: "AWS::Region"}
               - ":"
-              - Ref: "AWS::AccountId"
+              - {Ref: "AWS::AccountId"}
               - ":table/"
               - Ref: ArticlesDB
               - '/index/*'
@@ -72,6 +94,7 @@ resources:
       Value: {Ref: WebSite}
   Resources:
     ArticlesDB: ${file(resources/article-db.yml)}
+    CommentsDB: ${file(resources/comment-db.yml)}
     WebSite:
       Type: "AWS::S3::Bucket"
       Properties:
@@ -91,3 +114,4 @@ package:
     - node_modules/lodash/**
     - node_modules/graphql/**
     - node_modules/iterall/**
+    - node_modules/aws-sdk/**
