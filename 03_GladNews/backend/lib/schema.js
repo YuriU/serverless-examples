@@ -13,7 +13,9 @@ const rootQuery = new G.GraphQLObjectType({
         resolve () {
           return 'pong'
         }
-      }
+      },
+      articles: types.Articles,
+      article: types.Article
     }
   })
 
