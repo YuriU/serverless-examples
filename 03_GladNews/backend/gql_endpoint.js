@@ -4,7 +4,7 @@ const G = require('graphql')
 const schema = require('./lib/schema')
 
 function runQuery (query, claims, variables) {
-  return G.graphql(schema, query, {claims: claims}, null, variables)
+  return G.graphql(schema.Schema, query, {claims: claims}, null, variables)
 }
 
 module.exports.handler = (event, context, cb) => {
