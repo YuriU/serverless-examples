@@ -71,7 +71,7 @@ resources:
     WebSiteBucket:
       Value: {Ref: WebSite}
   Resources:
-    ArticlesDB: ${file('resources/article-db')}
+    ArticlesDB: ${file(resources/article-db.yml)}
     WebSite:
       Type: "AWS::S3::Bucket"
       Properties:
