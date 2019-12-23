@@ -18,9 +18,43 @@ const ArticleInputType = new G.GraphQLInputObjectType({
   }
 })
 
+const CommentInputType = new G.GraphQLInputObjectType({
+  name: 'NewComment',
+  fields: {
+    article_id: {
+      type: G.GraphQLString
+    },
+    body: {
+      type: G.GraphQLString
+    }
+  }
+})
+
 const mutations = new G.GraphQLObjectType({
   name: 'RootMutationType',
   fields: {
+    createComment: {
+      type: types.CommentType,
+      args: {
+        comment: { type: CommentInputType }
+      },
+      resolve: (context, args) => {
+        const new_comment = {
+          article_id: args.comment.article_id,
+          commenter_id: context.claims['cognito:username'],
+          commenter_fullname: context.claims['name'],
+          body: args.comment.body,
+          posted_at: (lo.now() / 1000)
+        }
+        console.log('Creating comment DDB object', new_comment)
+        return ddb.CommentDB.put({
+          Item: new_comment
+        }).promise().then(data => {
+          console.log('Successfully wrote to DynamoDB', data)
+          return new_comment
+        })
+      }
+    },
     createArticle: {
       type: types.ArticleType,
       args: {
@@ -36,7 +70,7 @@ const mutations = new G.GraphQLObjectType({
           id: uuid(),
           link: args.article.link,
           title: args.article.title,
-          posted_at: Math.round((lo.now() / 1000)) 
+          posted_at: (lo.now() / 1000)
         }
         console.log('Creating DDB object', new_article)
         return ddb.ArticleDB.put({
