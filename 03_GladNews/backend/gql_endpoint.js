@@ -4,14 +4,20 @@ const G = require('graphql')
 const schema = require('./lib/schema')
 
 function runQuery (query, claims, variables) {
+  if(claims === null){
+    return G.graphql(schema.PublicSchema, query, {claims: claims}, null, variables)
+  }
   return G.graphql(schema.Schema, query, {claims: claims}, null, variables)
 }
 
 module.exports.handler = (event, context, cb) => {
   console.log('Received event', JSON.stringify(event))
 
-  const userInfo = event.requestContext.authorizer.claims
-  console.log(`Event from user ${userInfo.name} with ID ${userInfo.sub}`)
+  var userInfo = null;
+  if (event.requestContext.authorizer){
+    userInfo = event.requestContext.authorizer.claims;
+    console.log(`Event from user ${userInfo.name} with ID ${userInfo.sub}`)
+  }
 
   const request = JSON.parse(event.body)
   console.log('Query: ' + request.query)
