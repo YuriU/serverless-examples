@@ -85,6 +85,10 @@ functions:
             arn: '${self:custom.${self:custom.stage}CognitoPool}'
           path: /gql
           method: post
+      - http:
+          cors: true
+          path: /readgql
+          method: post
 
 resources:
   Outputs:

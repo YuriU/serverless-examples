@@ -5,7 +5,7 @@ const schema = require('./lib/schema')
 
 function runQuery (query, claims, variables) {
   if(claims === null){
-    return G.graphql(schema.PublicSchema, query, {claims: claims}, null, variables)
+    return G.graphql(schema.PublicSchema, query, {}, null, variables)
   }
   return G.graphql(schema.Schema, query, {claims: claims}, null, variables)
 }
