@@ -3,6 +3,7 @@ module.exports.test = async (request, response, next) => {
         uid: '1'
     }
     next();
+    return;
 }
 
 
@@ -18,6 +19,7 @@ module.exports.requiresAuth = async (admin, request, response, next) => {
         const decodedIdToken = await admin.auth().verifyIdToken(idToken);
         request.user = decodedIdToken;
         next();
+        return;
     }
     catch(e){
         console.error(e);
