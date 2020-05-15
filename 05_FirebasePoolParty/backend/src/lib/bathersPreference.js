@@ -24,9 +24,7 @@ const set = async({admin}, request, response) => {
 
     const db = admin.firestore();
 
-    var parsedRequest = JSON.parse(request.body);
-  
-    if(!(request.body && parsedRequest.bathersPreference)){
+    if(!(request.body && request.body.bathersPreference)){
         response.status(500).send({
         error: 'No bathersPreference in body'
         })
@@ -35,7 +33,7 @@ const set = async({admin}, request, response) => {
     }
     
     const userId = request.user.uid;
-    const bathersPreference = parsedRequest.bathersPreference;
+    const bathersPreference = request.body.bathersPreference;
     const result = {
         changed: false
     };

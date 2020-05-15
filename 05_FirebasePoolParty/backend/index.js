@@ -14,7 +14,7 @@ const app = express();
 admin.initializeApp();
 
 app.use(cors({origin: true}));
-app.use(auth.test)
+app.use(auth.requiresAuth.bind(null, admin))
 
 app.get('/', (request, response) => bathersPreference.get(cx, request, response));
 app.post('/', (request, response) => bathersPreference.set(cx, request, response));
