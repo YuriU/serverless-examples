@@ -2,18 +2,7 @@ const get = async({admin}, request, response) => {
 
     const db = admin.firestore();
 
-    console.log(request.body);
-    var parsedRequest = JSON.parse(request.body);
-  
-    if(!(request.body && parsedRequest.userId)){
-        response.status(500).send({
-        error: 'No userId in body'
-        })
-
-        return;
-    }
-    
-    const userId = parsedRequest.userId;
+    const userId = request.user.uid;
     const result = {
         found: false
     };
@@ -35,17 +24,8 @@ const set = async({admin}, request, response) => {
 
     const db = admin.firestore();
 
-    console.log(request.body);
     var parsedRequest = JSON.parse(request.body);
   
-    if(!(request.body && parsedRequest.userId)){
-        response.status(500).send({
-        error: 'No userId in body'
-        })
-
-        return;
-    }
-
     if(!(request.body && parsedRequest.bathersPreference)){
         response.status(500).send({
         error: 'No bathersPreference in body'
@@ -54,7 +34,7 @@ const set = async({admin}, request, response) => {
         return;
     }
     
-    const userId = parsedRequest.userId;
+    const userId = request.user.uid;
     const bathersPreference = parsedRequest.bathersPreference;
     const result = {
         changed: false

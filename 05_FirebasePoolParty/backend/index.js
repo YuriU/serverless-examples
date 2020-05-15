@@ -1,20 +1,22 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const express = require('express');
+const cors = require('cors');
 const bathersPreference = require('./src/lib/bathersPreference');
-//var serviceAccount = require('path/to/serviceAccountKey.json');
+const auth = require('./src/middleware/auth')
+
 const cx = {
   admin: admin
 };
 
 
-
+const app = express();
 admin.initializeApp();
 
-exports.get = functions.https.onRequest(async (request, response) => {
-  await bathersPreference.get(cx, request, response);
- });
+app.use(cors({origin: true}));
+app.use(auth.test)
 
-
- exports.set = functions.https.onRequest(async (request, response) => {
-  await bathersPreference.set(cx, request, response);
- });
+app.get('/', (request, response) => bathersPreference.get(cx, request, response));
+app.post('/', (request, response) => bathersPreference.set(cx, request, response));
+ 
+exports.bathers = functions.https.onRequest(app);
