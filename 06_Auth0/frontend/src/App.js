@@ -7,7 +7,7 @@ class App extends Component {
     super();
     const lock = new Auth0Lock(
       '<ClientId>',
-      '<Domain>'
+      '<DomainName>'
     );
 
     this.lock = lock;
