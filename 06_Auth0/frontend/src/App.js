@@ -1,13 +1,28 @@
 import React, { Component } from 'react';
 import { Auth0Lock } from 'auth0-lock';
+import axios from 'axios';
 import './App.css';
+
+const API_URL = '<API_URL>';
 
 class App extends Component {
   constructor() {
     super();
+
+    const auth0Configuration = {
+      auth: {
+        audience: API_URL,
+        params: {
+          scope: 'openid profile email'
+        },
+        responseType: 'token'
+      }
+    };
+
     const lock = new Auth0Lock(
       '<ClientId>',
-      '<DomainName>'
+      '<Auth0Domain>',
+      auth0Configuration
     );
 
     this.lock = lock;
@@ -16,7 +31,8 @@ class App extends Component {
 
   state = {
       accessToken: null,
-      profile: null
+      profile: null,
+      response: ''
   }
 
   showLogin = () => {
@@ -61,8 +77,27 @@ class App extends Component {
         profile: JSON.parse(profile)
       });
     }
+  }
 
+  makeRequest = () => {
 
+    const bearerToken = this.state.accessToken;
+    axios('/hello', {
+      baseURL: API_URL,
+      headers: {
+        Authorization: bearerToken ? `Bearer ${bearerToken}` : null,
+      }
+    })
+    .then((response)=> {
+      this.setState({
+        response: response.data.message
+      });
+    })
+    .catch((error) => {
+      this.setState({
+        response: JSON.stringify(error)
+      });
+    });
   }
 
   render() {
@@ -83,6 +118,8 @@ class App extends Component {
             </div>
             )
         }
+        <button onClick={this.makeRequest}>Hello?</button>
+        <p>{this.state.response}</p>
       </header>
     </div>
   );
