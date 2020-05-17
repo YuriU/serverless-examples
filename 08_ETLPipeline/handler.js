@@ -1,10 +1,27 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const csv = require('fast-csv');
+const config = require('./config.json');
+
+function toISODate(dateString) {
+  const dateObj = new Date(
+    dateString.substr(0, 4), // year
+    1, // Months are numbered 1..12
+    dateString.substr(4, 2), // month
+    dateString.substr(6, 2), // day
+    dateString.substr(8, 2), // hour
+    dateString.substr(10, 2), // min
+    dateString.substr(12, 2), // sec
+  )
+
+  return dateObj.toISOString();
+}
 
 module.exports.ingestGdeltData = async (event, context) => {
 
   const s3 = new AWS.S3({apiVersion: '2016-03-01'});
+  const firehose = new AWS.Firehose({apiVersion: '2015-08-04'});
 
   console.log("Sns Event:  ", event['Records'][0]['Sns']);
 
@@ -33,7 +50,29 @@ module.exports.ingestGdeltData = async (event, context) => {
   console.info(`Found GDELT events file: ${bucketName}/${objectKey}`);
 
   const objectLocation = { Bucket: bucketName, Key: objectKey };
-  const s3Object = s3.getObject(objectLocation);
+  const s3Object = s3.getObject(objectLocation).createReadStream();
 
+  const loadFromStream = s3Object => new Promise((resolve, reject) => {
+    csv.fromStream(s3Object, { delimiter: '\t', headers: config.GDELT_EVENT_FIELDS })
+    .on('data', async function(data) {
+      data['IsoTime'] = toISODate(data['DateAdded']);
+      data['QuadClassString'] = config.GDELT_QUADCLASS_MAP[data['QuadClass']] || "UNKNOWN";
+
+      await firehose.putRecord({
+        DeliveryStreamName: process.env.DATALYZER_INGEST_STREAM_NAME,
+        Record: {'Data': JSON.stringify(data)}
+      }).promise();
+    })
+    .on('end', function() {
+      console.log("End of the CSV.");
+      resolve();
+    })
+    .on('error', function(err) {
+      console.log("ERROR: ", err);
+      reject(err);
+    });
+  });
+
+  await loadFromStream(s3Object);
   return;
 };
