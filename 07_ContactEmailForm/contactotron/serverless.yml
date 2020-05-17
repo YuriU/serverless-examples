@@ -10,8 +10,13 @@ package:
     - node_modules/**
 
 functions:
-  hello:
-    handler: handler.hello
+  submitContactForm:
+    handler: handler.submitContactForm
+    events:
+      - http:
+          path: submitContactForm
+          method: post
+          cors: true
 
 plugins:
   - serverless-finch
@@ -19,4 +24,4 @@ plugins:
 custom:
   client:
     bucketName: jerryhire8test1-lab-demo-2020
-    distributionFolder: build
+    distributionFolder: build/

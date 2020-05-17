@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import config from './config-dev';
 
 class App extends Component {
 
@@ -14,6 +15,33 @@ class App extends Component {
 }
 
 class ContactForm extends Component {
+
+  sendContactForm = (evt) => {
+
+    evt.preventDefault();
+
+    
+
+    const messageData = {
+        name: this.refs.name.value,
+        email: this.refs.email.value,
+        message: this.refs.message.value
+    };
+
+    fetch(config.submitContactFormURL, {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(messageData)
+    })
+    .then(response => response.json())
+    .then(response => console.log("Success: ", response))
+    .catch(error => console.error("ERROR: ", error));
+
+
+    this.refs.contactForm.reset();
+  };
+
   render() {
     return (
     <form ref="contactForm">
@@ -28,7 +56,7 @@ class ContactForm extends Component {
       <textarea ref="message" rows="6" cols="40">
       </textarea>
       <hr />
-      <button>Send Message</button>
+      <button onClick={this.sendContactForm}>Send Message</button>
     </form>
     );
   }
