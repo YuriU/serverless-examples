@@ -1,3 +1,5 @@
 .serverless
 node_modules
 package-lock.json
+/07_ContactEmailForm/contactotron/src/config-dev.js
+/07_ContactEmailForm/contactotron/yarn.lock

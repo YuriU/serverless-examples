@@ -1,0 +1,20 @@
+service: datalyzer
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:GetObject"
+      Resource:
+        - "arn:aws:s3:::gdelt-open-data/*"
+
+
+functions:
+  ingestGdeltData:
+    handler: handler.ingestGdeltData
+    events:
+      - sns:
+          arn: "arn:aws:sns:us-east-1:928094251383:gdelt-csv"
