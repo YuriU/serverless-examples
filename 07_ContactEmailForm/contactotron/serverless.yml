@@ -4,6 +4,15 @@ service: contactotron
 provider:
   name: aws
   runtime: nodejs12.x
+  environment:
+    CONTACT_TOPIC_ARN:
+      Ref: contactotronTopic
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - "sns:Publish"
+      Resource:
+        - Ref: contactotronTopic
 
 package:
   exclude:
@@ -25,3 +34,11 @@ custom:
   client:
     bucketName: jerryhire8test1-lab-demo-2020
     distributionFolder: build/
+
+resources:
+  Resources:
+    contactotronTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: "Contactotron Contact Form"
+        TopicName: contactotronTopic-${self:provider.stage}

@@ -16,12 +16,18 @@ class App extends Component {
 
 class ContactForm extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      message: ""
+    };
+  }
+
+
   sendContactForm = (evt) => {
 
     evt.preventDefault();
-
-    
-
     const messageData = {
         name: this.refs.name.value,
         email: this.refs.email.value,
@@ -35,7 +41,12 @@ class ContactForm extends Component {
       body: JSON.stringify(messageData)
     })
     .then(response => response.json())
-    .then(response => console.log("Success: ", response))
+    .then(response => { 
+        console.log("Success: ", response)
+        this.setState({
+          message: response.message
+        });
+    })
     .catch(error => console.error("ERROR: ", error));
 
 
@@ -57,6 +68,7 @@ class ContactForm extends Component {
       </textarea>
       <hr />
       <button onClick={this.sendContactForm}>Send Message</button>
+      <div>{this.state.message}</div>
     </form>
     );
   }
