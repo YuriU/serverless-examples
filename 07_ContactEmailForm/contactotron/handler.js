@@ -1,6 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const uuid = require('uuid');
 
 
 module.exports.submitContactForm = async (event, context) => {
@@ -37,24 +38,51 @@ module.exports.submitContactForm = async (event, context) => {
   }
 
 
-  const snsMessage = {
-    TopicArn: process.env.CONTACT_TOPIC_ARN,
-    Subject: "Message from Contactotron",
-    Message: `
-Contact Form Message
-
-From: ${messageData.name} <${messageData.email}>
-Message: 
-${messageData.message}
-    `
-  };
-
-  const result = await sns.publish(snsMessage).promise();
-  console.log("PUBLISH RESULT: ", result);
-
+  if(statusCode === 200) {
+    const snsMessage = {
+      TopicArn: process.env.CONTACT_TOPIC_ARN,
+      Subject: "Message from Contactotron",
+      Message: `
+  Contact Form Message
+  
+  From: ${messageData.name} <${messageData.email}>
+  Message: 
+  ${messageData.message}
+      `
+    };
+  
+    const result = await sns.publish(snsMessage).promise();
+    console.log("PUBLISH RESULT: ", result);
+  }
+  
   response.statusCode = statusCode;
   response.body = JSON.stringify({ message: message });
 
   console.log("RESPONSE: ", JSON.stringify(response));
   return response;
 };
+
+
+
+module.exports.saveContactMessage = async (event, context) => {
+  console.log("SNS EVENT: ", event);
+
+  const dynamoDB = new AWS.DynamoDB();
+  const snsObject = event.Records[0].Sns;
+
+  const dbItem = {
+    TableName: process.env.CONTACT_TABLE_NAME,
+    Item: {
+      'id': { S: uuid.v4() },
+      'Timestamp': { S: snsObject.Timestamp},
+      'MessageId': { S: snsObject.MessageId},
+      'Message': { S: snsObject.Message },
+      'Subject': { S: snsObject.Subject }
+    }
+  };
+
+  console.log("Saving: ", dbItem);
+
+  await dynamoDB.putItem(dbItem).promise();
+  return;
+}
