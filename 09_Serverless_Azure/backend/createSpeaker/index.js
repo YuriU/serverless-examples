@@ -5,7 +5,7 @@ const uuid = require("uuid").v4;
 module.exports = function(context, req) {
   context.log("createSpeaker function processing request");
   context.log("req.body", req.body);
-  if (req.body) {
+  if (req.body && req.body.name) {
     let speakerData = req.body;
 
     publishToEventGrid(speakerData);
@@ -50,9 +50,10 @@ function response(client, context) {
 //Helper function to publish event to eventGrid
 function publishToEventGrid(speaker) {
   console.log("in publishToEventGrid function");
+  console.log('SPEAKER', JSON.stringify(speaker));
   const topicKey = process.env.eventGrid_TopicKey
   const topicHostName = process.env.eventGrid_Endpoint;
-  let data = speaker;
+
   let events = [
     {
       id: uuid(),
