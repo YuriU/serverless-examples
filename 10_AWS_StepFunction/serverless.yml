@@ -20,19 +20,25 @@ provider:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    
 
 functions:
   hello:
     handler: handler.hello
-    events:
-      - http:
-          method: get
-          path: hello
+  startExecution:
+    handler: handler.startExecution
+    environment:
+      STEP_FUNCTION_ARN: ${self:resources.Outputs.myFirstStateMachine.Value}
+
 
 stepFunctions:
   stateMachines:
     myFirstStateMachine:
       name: myFirstStateMachine
+      events:
+        - http:
+            path: hello
+            method: GET
       definition: 
         Comment: "MyFirst state machine"
         StartAt: WaitState
@@ -46,3 +52,10 @@ stepFunctions:
             Resource:
               Fn::GetAtt: [hello, Arn]
             End: true
+          
+resources:
+  Outputs:
+    myFirstStateMachine:
+      Description: The ARN of the example state machine
+      Value:
+        Ref: MyFirstStateMachine
