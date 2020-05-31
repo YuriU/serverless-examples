@@ -12,7 +12,8 @@ export const startExecution: APIGatewayProxyHandler = async(event, _context) => 
 
   var params = {
     stateMachineArn: process.env.STEP_FUNCTION_ARN,
-    name: transactionId
+    name: transactionId,
+    input: JSON.stringify({ Message: 'Hello world'})
   };
 
   var request = stepfunctions.startExecution(params);
@@ -29,9 +30,9 @@ export const startExecution: APIGatewayProxyHandler = async(event, _context) => 
 }
 
 export const hello: APIGatewayProxyHandler = async (event, _context) => {
-  var stepfunctions = new AWS.StepFunctions({apiVersion: '2016-11-23'});
+  
 
-  console.log(stepfunctions);
+  console.log(event);
 
   
   return {
