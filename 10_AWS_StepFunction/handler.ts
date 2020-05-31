@@ -12,15 +12,12 @@ export const startExecution: APIGatewayProxyHandler = async(event, _context) => 
 
   var params = {
     stateMachineArn: process.env.STEP_FUNCTION_ARN,
-    input:  JSON.stringify({ 'Message': 'HelloWorld' }),
     name: transactionId
   };
 
-  var result = await stepfunctions.startExecution(params);
+  var request = stepfunctions.startExecution(params);
 
-  console.log("RESULT: >>>>");
-  console.log(result);
-
+  request.send();
 
   return {
     statusCode: 200,
@@ -36,7 +33,6 @@ export const hello: APIGatewayProxyHandler = async (event, _context) => {
 
   console.log(stepfunctions);
 
-  
   
   return {
     statusCode: 200,
