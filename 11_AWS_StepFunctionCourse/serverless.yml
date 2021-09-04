@@ -15,6 +15,12 @@ functions:
   hello:
     handler: handler.hello
 
+  add:
+    handler: handler.add
+
+  double:
+    handler: handler.double
+
 stepFunctions:
   stateMachines:
     hello:
@@ -27,4 +33,20 @@ stepFunctions:
             Type: Task
             Resource:
               Fn::GetAtt: [hello, Arn]
+            End: true
+    simple-math:
+      name: simple-math
+      definition:
+        Comment: Simple math example
+        StartAt: Add
+        States:
+          Add:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [add, Arn]
+            Next: Double
+          Double:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [double, Arn]
             End: true
