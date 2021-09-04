@@ -23,3 +23,7 @@ module.exports.double = async (n) => {
   }
   return n * 2;
 };
+
+module.exports.doubleBigNumber = async (n) => {
+  return n * 2;
+};

@@ -21,6 +21,9 @@ functions:
   double:
     handler: handler.double
 
+  doubleBigNumber:
+    handler: handler.doubleBigNumber
+
 stepFunctions:
   stateMachines:
     hello:
@@ -44,7 +47,16 @@ stepFunctions:
             Type: Task
             Resource:
               Fn::GetAtt: [add, Arn]
-            Next: Double
+            Next: IsBigNumber
+
+          IsBigNumber:
+            Type: Choice
+            Choices:
+              - Variable: $
+                NumericGreaterThan: 50
+                Next: DoubleBigNumber
+            Default: Double
+
           Double:
             Type: Task
             Resource:
@@ -55,9 +67,16 @@ stepFunctions:
                 MaxAttempts: 5
               - ErrorEquals: [States.ALL]
                 MaxAttempts: 3
-            Catch: 
+            Catch:
               - ErrorEquals: [NumberIsTooBig]
                 Next: DefaultResponse
+
+          DoubleBigNumber:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [doubleBigNumber, Arn]
+            End: true
+          
           DefaultResponse:
             Type: Pass
             Result: 42
