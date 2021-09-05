@@ -1,0 +1,57 @@
+service: service-12-aws-express
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-step-functions
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+
+functions:
+  hello-world:
+    handler: handler.hello
+
+stepFunctions:
+  stateMachines:
+
+    helloMachineExp:
+      name: helloWorld-Express
+      type: EXPRESS
+      loggingConfig:
+        level: ALL
+        includeExecutionData: true
+        destinations:
+          - !GetAtt LogGroup.Arn
+      definition:
+        StartAt: hello
+        States:
+          hello:
+            Type: Task
+            Resource: !GetAtt hello-world.Arn
+            End: true
+
+    helloMachineStandard:
+      name: helloWorld-Standard
+      definition:
+        StartAt: hello
+        States:
+          hello:
+            Type: Task
+            Resource: !GetAtt hello-world.Arn
+            End: true
+      notifications:
+        SUCCEEDED:
+          - sqs: !GetAtt SqsQueue.Arn
+        RUNNING:
+          - sqs: !GetAtt SqsQueue.Arn
+
+resources:
+  Resources:
+    LogGroup:
+      Type: AWS::Logs::LogGroup
+
+    SqsQueue:
+      Type: AWS::SQS::Queue
